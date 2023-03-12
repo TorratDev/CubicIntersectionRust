@@ -1,14 +1,8 @@
-use rocket::{get, serde::json::Json};
-use serde_json::json;
-fn main() {
-    println!("Hello, world!");
+use rocket::routes;
+mod routes;
 
-    /// First api enpoint
-    #[get("/")]
-    fn index() -> Json<serde_json::Value> {
-        let data = json!({
-            "message": "Hello, world!"
-        });
-        Json(data)
-    }
+#[rocket::main]
+async fn main() {
+    let rocket = rocket::build().mount("/", routes![routes::index]);
+    rocket.launch().await.unwrap();
 }
