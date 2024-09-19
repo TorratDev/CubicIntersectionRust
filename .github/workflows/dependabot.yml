@@ -1,0 +1,23 @@
+version: 2
+updates:
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+    # For Rust (Cargo)
+  - package-ecosystem: "cargo"
+    directory: "/" # Location of the Cargo.toml file
+    schedule:
+      interval: "weekly" # Options: daily, weekly, monthly
+    # Optionally, add open-pull-requests-limit to limit the number of PRs Dependabot opens
+    # open-pull-requests-limit: 5
+
+  # Maintain dependencies for Composer
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
