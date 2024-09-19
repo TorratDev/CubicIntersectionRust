@@ -1,26 +1,32 @@
-﻿# Stage 1: Build the Rust project
-FROM rust:latest AS builder
+﻿# Use the official Rust image as the builder
+FROM rust:1.81 as builder
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy the Cargo.toml and Cargo.lock files to the container
-COPY Cargo.toml Cargo.lock ./
+# Copy the Cargo.toml and Cargo.lock files
+COPY Cargo.toml ./
 
-# Pre-fetch dependencies (this will help in caching)
+# Create a dummy file to cache dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+
+# Fetch dependencies
 RUN cargo fetch
 
-# Copy the source code to the container
+# Copy the rest of the source code
 COPY . .
 
-# Build the project in release mode
+# Build the project
 RUN cargo build --release
 
-# Stage 2: Create a minimal image with the compiled binary
+# Use a minimal base image for running the application
 FROM debian:buster-slim
 
-# Copy the compiled binary from the builder stage
-COPY --from=builder /usr/src/app/target/release/app /usr/local/bin/app
+# Set the working directory
+WORKDIR /usr/local/bin
 
-# Set the command to run the binary
-CMD ["app"]
+# Copy the compiled binary from the builder stage
+COPY --from=builder /app/target/release/cubic_intersection_rust .
+
+# Define the entry point
+ENTRYPOINT ["./cubic_intersection_rust"]
